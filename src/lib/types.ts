@@ -1,26 +1,17 @@
-import {zip} from "lodash";
-
-export interface Table {
-    rows: Array<Map<String, Object>>;
-}
-
-export function mkTable(columnNames: String[], values: Object[][]) : Table {
-    let rows = values.map(row => new Map(zip(columnNames, row)));
-    return { rows: rows };
-}
+import pl from "nodejs-polars";
 
 export interface LumberjackContext {
-    getTable(name: string): Table
+    getTable(name: string): pl.DataFrame
 }
 
 export class SimpleContext implements LumberjackContext {
-    tables: Map<String, Table>;
+    tables: Map<String, pl.DataFrame>;
 
-    constructor(tables: Map<String, Table>) {
+    constructor(tables: Map<String, pl.DataFrame>) {
         this.tables = tables;
     }
 
-    getTable(name: string): Table {
+    getTable(name: string): pl.DataFrame {
         return this.tables.get(name)!;
     }
 }

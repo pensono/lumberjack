@@ -7,6 +7,7 @@ import * as syntax from "./syntax"
 const lexer = moo.compile({
     ws: /[ \t]+/,
     nl: { match: "\n", lineBreaks: true },
+    pipe: "|",
     lte: "<=",
     lt: "<",
     gte: ">=",
@@ -52,12 +53,31 @@ const lexer = moo.compile({
 
 @lexer lexer
 
-main -> identifier ("|" operator):* {%
-    ([d]) => {
-        let input = new syntax.TableLookup(d[0].text);
-        return new syntax.Query(input);
+json -> _ identifier _ operator_list _ {%
+    function(d) {
+        let input = new syntax.TableLookup(d[1]);
+        let operations = d[3];
+        return new syntax.Query(input, operations);
     }
 %}
-expression ->
-    identifier {% ([[identifier]]) => new syntax.TableLookup(identifier.text) %}
-identifier -> %identifier
+
+operator_list -> ("|" _ operator _):* {%
+    d => {
+        let output = [];
+
+        for (let i in d[0]) {
+            output.push(d[0][i][2]);
+        }
+
+        return output;
+    }
+%}
+
+operator ->
+    "take" __ %number_literal {% (d) => new syntax.Operator("take", {rows: d[2].value}) %}
+
+identifier -> %identifier {% d => d[0].text %}
+
+# Whitespace
+_ -> null | _ [\s] {% function() {} %}
+__ -> [\s] | __ [\s] {% function() {} %}

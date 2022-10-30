@@ -7,11 +7,22 @@ export class TableLookup {
     }
 }
 
+export class Operator {
+    name: string;
+    arguments: object;
+
+    constructor(name: string, args: object) {
+        this.name = name;
+        this.arguments = args;
+    }
+}
+
 export class Query {
     input: TableLookup;
+    operators: Operator[];
 
-
-    constructor(input: TableLookup) {
+    constructor(input: TableLookup, operators: Operator[]) {
         this.input = input;
+        this.operators = operators;
     }
 }
