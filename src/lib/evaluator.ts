@@ -1,12 +1,12 @@
 import * as nearley from "nearley"
-import {LumberjackContext, Table} from "./types"
-import * as kusto_grammar from "./kusto";
-import {Query, Operator} from "@/lib/syntax";
 import pl from "nodejs-polars";
+import { LumberjackContext } from "@/lib/types"
+import {default as kusto_grammar} from "@/lib/kusto";
+import { Query, Operator } from "@/lib/syntax";
 
 
 export function evaluate(program: string, context: LumberjackContext) : pl.DataFrame {
-    const parser = new nearley.Parser(kusto_grammar.default)
+    const parser = new nearley.Parser(kusto_grammar)
 
     parser.feed(program);
     let query: Query = parser.results[0];
@@ -19,13 +19,13 @@ export function evaluate(program: string, context: LumberjackContext) : pl.DataF
     return result;
 }
 
-function performOperator(operator: Operator, input: Table, context: LumberjackContext) : pl.DataFrame {
+function performOperator(operator: Operator, input: pl.DataFrame, context: LumberjackContext) : pl.DataFrame {
     switch (operator.name) {
         case "take": { return take(input, operator.arguments.rows); }
         default: { throw new Error(`No implementation for operator ${operator.name}`)}
     }
 }
 
-function take(input: Table, rows: number) : pl.DataFrame {
+function take(input: pl.DataFrame, rows: number) : pl.DataFrame {
     return input.limit(rows);
 }
