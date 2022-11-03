@@ -73,8 +73,15 @@ operator_list -> ("|" _ operator _):* {%
     }
 %}
 
-operator ->
-    "take" __ %number_literal {% (d) => new syntax.Operator("take", {rows: d[2].value}) %}
+operator
+    -> "take" __ %number_literal {% (d) => new syntax.Operator("take", {rows: d[2].value}) %}
+    | "where" __ expression {% (d) => new syntax.Operator("where", {predicate: d[2]}) %}
+
+expression
+    -> identifier {% (d) => ({kind: "columnIdentifier", name: d[0]}) %}
+    | %number_literal {% (d) => ({kind: "literal", value: d[0].value}) %}
+    | expression _ "==" _ expression {% (d) => ({kind: "equals", left: d[0], right: d[4]}) %}
+    | expression _ "<" _ expression {% (d) => ({kind: "lessThan", left: d[0], right: d[4]}) %}
 
 identifier -> %identifier {% d => d[0].text %}
 

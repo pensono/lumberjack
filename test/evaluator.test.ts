@@ -7,6 +7,8 @@ describe('evaluate', () => {
     test.each([
         ["Input", new Map([["Input", pl.DataFrame({"column":["value"]})]]), pl.DataFrame({"column":["value"]})],
         ["Input | take 1 | take 5", new Map([["Input", pl.DataFrame({"column":["value1", "value2", "value3"]})]]), pl.DataFrame({"column":["value1"]})],
+        ["Input | where column == 3", new Map([["Input", pl.DataFrame({"column":[1,2,3,4,5]})]]), pl.DataFrame({"column":[3]})],
+        ["Input | where column < 3", new Map([["Input", pl.DataFrame({"column":[1,2,3,4,5]})]]), pl.DataFrame({"column":[1,2]})],
     ])
     ('evaluate(%s,...)', (program: string, inputs: Map<string, pl.DataFrame>, expected: pl.DataFrame) => {
         let context = new SimpleContext(new Map(inputs));

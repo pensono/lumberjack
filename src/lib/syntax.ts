@@ -17,6 +17,24 @@ export class Operator {
     }
 }
 
+export type Expression = Literal | ColumnName | BinaryExpression
+
+export interface Literal {
+    kind: "literal";
+    value: any;
+}
+
+export interface ColumnName {
+    kind: "columnIdentifier";
+    name: string;
+}
+
+export interface BinaryExpression {
+    kind: "equals" | "lessThan";
+    left: Expression;
+    right: Expression;
+}
+
 export class Query {
     input: TableLookup;
     operators: Operator[];
