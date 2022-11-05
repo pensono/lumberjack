@@ -106,9 +106,9 @@ const grammar: Grammar = {
             return output;
         }
         },
-    {"name": "operator", "symbols": [{"literal":"take"}, "__", (lexer.has("number_literal") ? {type: "number_literal"} : number_literal)], "postprocess": (d) => new syntax.Operator("take", {rows: d[2].value})},
-    {"name": "operator", "symbols": [{"literal":"where"}, "__", "expression"], "postprocess": (d) => new syntax.Operator("where", {predicate: d[2]})},
-    {"name": "operator", "symbols": [{"literal":"extend"}, "__", "identifier", "_", {"literal":"="}, "_", "expression"], "postprocess": (d) => new syntax.Operator("extend", {columnName: d[2], expression: d[6]})},
+    {"name": "operator", "symbols": [{"literal":"take"}, "__", (lexer.has("number_literal") ? {type: "number_literal"} : number_literal)], "postprocess": (d) => ({kind: "take", rows: d[2].value})},
+    {"name": "operator", "symbols": [{"literal":"where"}, "__", "expression"], "postprocess": (d) => ({kind: "where", predicate: d[2]})},
+    {"name": "operator", "symbols": [{"literal":"extend"}, "__", "identifier", "_", {"literal":"="}, "_", "expression"], "postprocess": (d) => ({kind: "extend", columnName: d[2], value: d[6]})},
     {"name": "expression", "symbols": ["identifier"], "postprocess": (d) => ({kind: "columnIdentifier", name: d[0]})},
     {"name": "expression", "symbols": [(lexer.has("number_literal") ? {type: "number_literal"} : number_literal)], "postprocess": (d) => ({kind: "literal", value: d[0].value})},
     {"name": "expression", "symbols": ["expression", "_", {"literal":"=="}, "_", "expression"], "postprocess": (d) => ({kind: "equals", left: d[0], right: d[4]})},

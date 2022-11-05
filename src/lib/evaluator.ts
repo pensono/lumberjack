@@ -20,11 +20,10 @@ export function evaluate(program: string, context: LumberjackContext) : pl.DataF
 }
 
 function performOperator(operator: Operator, input: pl.DataFrame, context: LumberjackContext) : pl.DataFrame {
-    switch (operator.name) {
-        case "take": { return take(input, operator.arguments.rows); }
-        case "where": { return where(input, operator.arguments.predicate); }
-        case "extend": { return extend(input, operator.arguments.columnName, operator.arguments.expression); }
-        default: { throw new Error(`No implementation for operator ${operator.name}`)}
+    switch (operator.kind) {
+        case "take": { return take(input, operator.rows); }
+        case "where": { return where(input, operator.predicate); }
+        case "extend": { return extend(input, operator.columnName, operator.value); }
     }
 }
 

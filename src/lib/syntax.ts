@@ -1,4 +1,14 @@
 
+export class Query {
+    input: TableLookup;
+    operators: Operator[];
+
+    constructor(input: TableLookup, operators: Operator[]) {
+        this.input = input;
+        this.operators = operators;
+    }
+}
+
 export class TableLookup {
     name: string;
 
@@ -7,14 +17,25 @@ export class TableLookup {
     }
 }
 
-export class Operator {
-    name: string;
-    arguments: object;
+export type Operator =
+    Take
+    | Where
+    | Extend;
 
-    constructor(name: string, args: object) {
-        this.name = name;
-        this.arguments = args;
-    }
+export interface Take {
+    kind: "take";
+    rows: number;
+}
+
+export interface Where {
+    kind: "where";
+    predicate: Expression;
+}
+
+export interface Extend {
+    kind: "extend";
+    columnName: string;
+    value: Expression;
 }
 
 export type Expression = Literal | ColumnName | BinaryExpression
@@ -33,14 +54,4 @@ export interface BinaryExpression {
     kind: "equals" | "lessThan" | "add" | "multiply";
     left: Expression;
     right: Expression;
-}
-
-export class Query {
-    input: TableLookup;
-    operators: Operator[];
-
-    constructor(input: TableLookup, operators: Operator[]) {
-        this.input = input;
-        this.operators = operators;
-    }
 }

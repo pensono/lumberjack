@@ -74,9 +74,9 @@ operator_list -> ("|" _ operator _):* {%
 %}
 
 operator
-    -> "take" __ %number_literal {% (d) => new syntax.Operator("take", {rows: d[2].value}) %}
-    | "where" __ expression {% (d) => new syntax.Operator("where", {predicate: d[2]}) %}
-    | "extend" __ identifier _ "=" _ expression {% (d) => new syntax.Operator("extend", {columnName: d[2], expression: d[6]}) %}
+    -> "take" __ %number_literal {% (d) => ({kind: "take", rows: d[2].value}) %}
+    | "where" __ expression {% (d) => ({kind: "where", predicate: d[2]}) %}
+    | "extend" __ identifier _ "=" _ expression {% (d) => ({kind: "extend", columnName: d[2], value: d[6]}) %}
 
 expression
     -> identifier {% (d) => ({kind: "columnIdentifier", name: d[0]}) %}
