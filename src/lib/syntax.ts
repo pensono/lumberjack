@@ -30,7 +30,7 @@ export interface ColumnName {
 }
 
 export interface BinaryExpression {
-    kind: "equals" | "lessThan";
+    kind: "equals" | "lessThan" | "add" | "multiply";
     left: Expression;
     right: Expression;
 }

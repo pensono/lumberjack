@@ -23,6 +23,7 @@ function performOperator(operator: Operator, input: pl.DataFrame, context: Lumbe
     switch (operator.name) {
         case "take": { return take(input, operator.arguments.rows); }
         case "where": { return where(input, operator.arguments.predicate); }
+        case "extend": { return extend(input, operator.arguments.columnName, operator.arguments.expression); }
         default: { throw new Error(`No implementation for operator ${operator.name}`)}
     }
 }
@@ -35,11 +36,17 @@ function where(input: pl.DataFrame, predicate: Expression) : pl.DataFrame {
     return input.where(toPolarsExpression(predicate));
 }
 
+function extend(input: pl.DataFrame, columnName: string, expression: Expression) : pl.DataFrame {
+    return input.withColumn(toPolarsExpression(expression).alias(columnName));
+}
+
 function toPolarsExpression(expression: Expression) : pl.Expr {
     switch (expression.kind) {
         case "literal": return pl.lit(expression.value);
         case "columnIdentifier": return pl.col(expression.name);
         case "equals": return toPolarsExpression(expression.left).eq(toPolarsExpression(expression.right));
         case "lessThan": return toPolarsExpression(expression.left).lessThan(toPolarsExpression(expression.right));
+        case "add": return toPolarsExpression(expression.left).plus(toPolarsExpression(expression.right));
+        case "multiply": return toPolarsExpression(expression.left).mul(toPolarsExpression(expression.right));
     }
 }
