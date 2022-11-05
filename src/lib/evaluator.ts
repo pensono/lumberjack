@@ -1,11 +1,12 @@
 import * as nearley from "nearley"
-import pl from "nodejs-polars";
+import * as dfd from "danfojs"
 import { LumberjackContext } from "@/lib/types"
-import {default as kusto_grammar} from "@/lib/kusto";
-import {Query, Operator, Expression} from "@/lib/syntax";
+import {default as kusto_grammar} from "@/lib/kusto"
+import {Query, Operator, Expression} from "@/lib/syntax"
+import {DataFrame, Series} from "danfojs";
 
 
-export function evaluate(program: string, context: LumberjackContext) : pl.DataFrame {
+export function evaluate(program: string, context: LumberjackContext) : dfd.DataFrame {
     const parser = new nearley.Parser(kusto_grammar)
 
     parser.feed(program);
@@ -19,7 +20,7 @@ export function evaluate(program: string, context: LumberjackContext) : pl.DataF
     return result;
 }
 
-function performOperator(operator: Operator, input: pl.DataFrame, context: LumberjackContext) : pl.DataFrame {
+function performOperator(operator: Operator, input: dfd.DataFrame, context: LumberjackContext) : dfd.DataFrame {
     switch (operator.kind) {
         case "take": { return take(input, operator.rows); }
         case "where": { return where(input, operator.predicate); }
@@ -27,25 +28,25 @@ function performOperator(operator: Operator, input: pl.DataFrame, context: Lumbe
     }
 }
 
-function take(input: pl.DataFrame, rows: number) : pl.DataFrame {
-    return input.limit(rows);
+function take(input: dfd.DataFrame, rows: number) : dfd.DataFrame {
+    return input.head(rows);
 }
 
-function where(input: pl.DataFrame, predicate: Expression) : pl.DataFrame {
-    return input.where(toPolarsExpression(predicate));
+function where(input: dfd.DataFrame, predicate: Expression) : dfd.DataFrame {
+    return input.loc({rows: evaluateExpression(input, predicate)});
 }
 
-function extend(input: pl.DataFrame, columnName: string, expression: Expression) : pl.DataFrame {
-    return input.withColumn(toPolarsExpression(expression).alias(columnName));
+function extend(input: dfd.DataFrame, columnName: string, expression: Expression) : dfd.DataFrame {
+    return input.addColumn(columnName, evaluateExpression(input, expression));
 }
 
-function toPolarsExpression(expression: Expression) : pl.Expr {
+function evaluateExpression(input: DataFrame, expression: Expression): Series {
     switch (expression.kind) {
-        case "literal": return pl.lit(expression.value);
-        case "columnIdentifier": return pl.col(expression.name);
-        case "equals": return toPolarsExpression(expression.left).eq(toPolarsExpression(expression.right));
-        case "lessThan": return toPolarsExpression(expression.left).lessThan(toPolarsExpression(expression.right));
-        case "add": return toPolarsExpression(expression.left).plus(toPolarsExpression(expression.right));
-        case "multiply": return toPolarsExpression(expression.left).mul(toPolarsExpression(expression.right));
+        case "literal": return expression.value;
+        case "columnIdentifier": return input[expression.name];
+        case "equals": return evaluateExpression(input, expression.left).eq(evaluateExpression(input, expression.right));
+        case "lessThan": return evaluateExpression(input, expression.left).lt(evaluateExpression(input, expression.right));
+        case "add": return evaluateExpression(input, expression.left).add(evaluateExpression(input, expression.right));
+        case "multiply": return evaluateExpression(input, expression.left).mul(evaluateExpression(input, expression.right));
     }
 }

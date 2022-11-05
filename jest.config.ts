@@ -8,6 +8,6 @@ export default {
   moduleNameMapper: {
     "^@/(.*)": "<rootDir>/src/$1"
   },
-  setupFilesAfterEnv : ["<rootDir>/test/polarsSetup.ts"],
-  testPathIgnorePatterns: ["<rootDir>/test/polarsSetup.ts"]
+  setupFilesAfterEnv : ["<rootDir>/test/danfoSetup.ts"],
+  testPathIgnorePatterns: ["<rootDir>/test/danfoSetup.ts"]
 };
