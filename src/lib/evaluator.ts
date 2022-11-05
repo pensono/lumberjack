@@ -1,9 +1,9 @@
 import * as nearley from "nearley"
 import * as dfd from "danfojs"
 import { LumberjackContext } from "@/lib/types"
-import {default as kusto_grammar} from "@/lib/kusto"
 import {Query, Operator, Expression} from "@/lib/syntax"
-import {DataFrame, Series} from "danfojs";
+import kusto_grammar from "@/lib/kusto"
+import RE2 from "re2"
 
 
 export function evaluate(program: string, context: LumberjackContext) : dfd.DataFrame {
@@ -40,7 +40,7 @@ function extend(input: dfd.DataFrame, columnName: string, expression: Expression
     return input.addColumn(columnName, evaluateExpression(input, expression));
 }
 
-function evaluateExpression(input: DataFrame, expression: Expression): Series {
+function evaluateExpression(input: dfd.DataFrame, expression: Expression): dfd.Series {
     switch (expression.kind) {
         case "literal": return expression.value;
         case "columnIdentifier": return input[expression.name];
@@ -48,5 +48,9 @@ function evaluateExpression(input: DataFrame, expression: Expression): Series {
         case "lessThan": return evaluateExpression(input, expression.left).lt(evaluateExpression(input, expression.right));
         case "add": return evaluateExpression(input, expression.left).add(evaluateExpression(input, expression.right));
         case "multiply": return evaluateExpression(input, expression.left).mul(evaluateExpression(input, expression.right));
+        case "extract": {
+            let regex = new RE2(expression.regex);
+            return evaluateExpression(input, expression.source).map(data => regex.exec(data)?.at(expression.captureGroup));
+        }
     }
 }

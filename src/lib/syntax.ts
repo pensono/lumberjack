@@ -38,7 +38,7 @@ export interface Extend {
     value: Expression;
 }
 
-export type Expression = Literal | ColumnName | BinaryExpression
+export type Expression = Literal | ColumnName | BinaryExpression | ExtractFunction
 
 export interface Literal {
     kind: "literal";
@@ -54,4 +54,11 @@ export interface BinaryExpression {
     kind: "equals" | "lessThan" | "add" | "multiply";
     left: Expression;
     right: Expression;
+}
+
+export interface ExtractFunction {
+    kind: "extract";
+    regex: string;
+    captureGroup: number;
+    source: Expression;
 }

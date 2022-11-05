@@ -85,6 +85,7 @@ expression
     | expression _ "<" _ expression {% (d) => ({kind: "lessThan", left: d[0], right: d[4]}) %}
     | expression _ "+" _ expression {% (d) => ({kind: "add", left: d[0], right: d[4]}) %}
     | expression _ "*" _ expression {% (d) => ({kind: "multiply", left: d[0], right: d[4]}) %}
+    | "extract" _ "(" _ %string_literal _ "," _ %number_literal _ "," _ expression _ ")" {% (d) => ({kind: "extract", regex: d[4].value, captureGroup: d[8].value, source: d[12]}) %}
 
 identifier -> %identifier {% d => d[0].text %}
 
