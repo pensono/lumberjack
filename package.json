@@ -10,13 +10,17 @@
     "generate": "nearleyc src/lib/kusto.ne > src/lib/kusto.ts"
   },
   "dependencies": {
+    "codemirror": "^6.0.1",
     "core-js": "^3.8.3",
     "danfojs": "^1.1.2",
     "lodash": "^4.17.21",
     "moo": "^0.5.2",
     "nearley": "^2.20.1",
     "re2": "^1.17.7",
-    "vue": "^3.2.13"
+    "splitpanes": "^3.1.5",
+    "vue": "^3.2.13",
+    "vue-codemirror": "^6.1.1",
+    "vuetify": "^3.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
