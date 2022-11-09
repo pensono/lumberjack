@@ -1,4 +1,4 @@
-import * as dfd from "danfojs"
+import type * as dfd from "danfojs"
 
 export interface LumberjackContext {
     getTable(name: string): dfd.DataFrame

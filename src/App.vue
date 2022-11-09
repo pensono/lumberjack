@@ -13,32 +13,28 @@
           </splitpanes>
         </pane>
         <pane max-size="90" min-size="5">
-          <v-table>
-            <thead>
-              <th v-for="column in outputTable.columns" :key="column" class="text-left">
-                {{column}}
-              </th>
-            </thead>
-            <tbody>
-              <tr v-for="row in outputTable.values" :key="row.index">
-                <td v-for="(cell, index) in row" :key="index">{{ cell }}</td>
-              </tr>
-            </tbody>
-          </v-table>
+          <DataFrameView v-if="outputTable" :dataframe="outputTable" />
         </pane>
       </splitpanes>
     </v-main>
   </v-app>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import 'splitpanes/dist/splitpanes.css';
-import {ref} from "vue";
-import * as dfd from "danfojs";
+import {computed, ref} from "vue";
+import {evaluate} from "@/lib/evaluator";
+import {toDataFrame} from "@/lib/raw_input";
+import {SimpleContext} from "@/lib/types";
+import DataFrameView from "@/components/DataFrameView.vue";
 
 const code = ref("");
 const dataRaw = ref("");
-const outputTable = ref(new dfd.DataFrame({"column":["value=4","value=5"],"value":["4","5"]}));
+const outputTable = computed(() => {
+  let input = toDataFrame(dataRaw.value);
+  let context = new SimpleContext(new Map([["Input", input]]));
+  return evaluate(code.value, context);
+})
 </script>
 
 <style>

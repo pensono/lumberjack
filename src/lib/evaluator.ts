@@ -3,14 +3,17 @@ import * as dfd from "danfojs"
 import { LumberjackContext } from "@/lib/types"
 import {Query, Operator, Expression} from "@/lib/syntax"
 import kusto_grammar from "@/lib/kusto"
-import RE2 from "re2"
 
 
-export function evaluate(program: string, context: LumberjackContext) : dfd.DataFrame {
+export function evaluate(program: string, context: LumberjackContext) : dfd.DataFrame | null {
     const parser = new nearley.Parser(kusto_grammar)
 
     parser.feed(program);
     let query: Query = parser.results[0];
+
+    if (!query) {
+        return null;
+    }
 
     var result = context.getTable(query.input.name);
     for (let operator of query.operators) {
@@ -49,7 +52,7 @@ function evaluateExpression(input: dfd.DataFrame, expression: Expression): dfd.S
         case "add": return evaluateExpression(input, expression.left).add(evaluateExpression(input, expression.right));
         case "multiply": return evaluateExpression(input, expression.left).mul(evaluateExpression(input, expression.right));
         case "extract": {
-            let regex = new RE2(expression.regex);
+            let regex = new RegExp(expression.regex);
             return evaluateExpression(input, expression.source).map(data => regex.exec(data)?.at(expression.captureGroup));
         }
     }
