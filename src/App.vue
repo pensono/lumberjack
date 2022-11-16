@@ -1,31 +1,29 @@
 <template>
-  <v-app>
-    <v-main>
-      <splitpanes horizontal class="default-theme">
-        <pane max-size="90" min-size="5">
-          <DataFrameView class="results" v-if="outputTable" :dataframe="outputTable" />
-        </pane>
-        <pane>
-          <splitpanes class="default-theme">
-            <pane class="code-container" min-size="5">
-              <codemirror
+  <main>
+    <splitpanes horizontal class="main-splitpane">
+      <pane max-size="90" min-size="5">
+        <splitpanes>
+          <pane class="code-container" min-size="5">
+            <codemirror
                 class="editor"
                 v-model="dataRaw"
                 placeholder="Data goes here..."
-              />
-            </pane>
-            <pane class="code-container" min-size="5">
-              <codemirror
+            />
+          </pane>
+          <pane class="code-container" min-size="5">
+            <codemirror
                 class="editor"
                 v-model="code"
                 placeholder="Queries go here..."
-              />
-            </pane>
-          </splitpanes>
-        </pane>
-      </splitpanes>
-    </v-main>
-  </v-app>
+            />
+          </pane>
+        </splitpanes>
+      </pane>
+      <pane>
+        <DataFrameView class="results" v-if="outputTable" :dataframe="outputTable" />
+      </pane>
+    </splitpanes>
+  </main>
 </template>
 
 <script setup lang="ts">
@@ -46,6 +44,19 @@ const outputTable = computed(() => {
 </script>
 
 <style>
+
+main {
+  display: flex;
+}
+
+.main-splitpane {
+  height: 100%;
+}
+
+.splitpanes__pane {
+  display: flex;
+}
+
 .splitpanes__splitter {
   padding: 5px;
 }
@@ -67,7 +78,22 @@ const outputTable = computed(() => {
 }
 
 html {
-  /*overflow: hidden;*/
   height: 100%;
+}
+
+body {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+main {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 </style>
