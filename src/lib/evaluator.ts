@@ -1,5 +1,6 @@
 import * as nearley from "nearley"
 import type * as dfd from "danfojs"
+import {Series} from "danfojs";
 import type { LumberjackContext } from "@/lib/types"
 import type {Query, Operator, Expression} from "@/lib/syntax"
 import kusto_grammar from "@/lib/kusto"
@@ -88,7 +89,7 @@ function extend(input: dfd.DataFrame, columnName: string, expression: Expression
 
 function evaluateExpression(input: dfd.DataFrame, expression: Expression): dfd.Series {
     switch (expression.kind) {
-        case "literal": return expression.value;
+        case "literal": return new Series(new Array(input.size).fill(expression.value)); // Would be nice to do this without creating a giant array
         case "columnIdentifier": return input[expression.name];
         case "equals": return evaluateExpression(input, expression.left).eq(evaluateExpression(input, expression.right));
         case "lessThan": return evaluateExpression(input, expression.left).lt(evaluateExpression(input, expression.right));
