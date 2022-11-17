@@ -1,4 +1,4 @@
-table {
+body {
   font-family: sans-serif;
 }
 
@@ -9,4 +9,8 @@ table th {
 
 table td {
   padding-left: .5em;
+}
+
+.error-box {
+  background: lightcoral;
 }

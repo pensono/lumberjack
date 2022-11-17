@@ -1,12 +1,8 @@
 <template>
-  <table>
+  <table v-if="dataframe">
     <thead>
       <tr>
-        <th
-          v-for="column in dataframe.columns"
-          :key="column"
-          class="text-left"
-        >
+        <th v-for="column in dataframe.columns" :key="column" class="text-left">
           {{ column }}
         </th>
       </tr>
@@ -17,23 +13,24 @@
       </tr>
     </tbody>
   </table>
+  <p v-else>No results yet :)</p>
 </template>
 
-<script>
-import * as dfd from "danfojs";
+<script lang="ts">
+import type * as dfd from "danfojs";
+import type { PropType } from "vue";
 
 export default {
   name: "DataFrameView",
   props: {
     dataframe: {
-      type: dfd.DataFrame,
+      type: Object as PropType<dfd.DataFrame | null>,
     },
   },
 };
 </script>
 
 <style scoped>
-
 table {
   padding: 1em;
   border-collapse: separate;

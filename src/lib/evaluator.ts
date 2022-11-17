@@ -1,26 +1,69 @@
 import * as nearley from "nearley"
-import * as dfd from "danfojs"
-import { LumberjackContext } from "@/lib/types"
-import {Query, Operator, Expression} from "@/lib/syntax"
+import type * as dfd from "danfojs"
+import type { LumberjackContext } from "@/lib/types"
+import type {Query, Operator, Expression} from "@/lib/syntax"
 import kusto_grammar from "@/lib/kusto"
 
 
-export function evaluate(program: string, context: LumberjackContext) : dfd.DataFrame | null {
+export interface KustoSyntaxError {
+    kind: "syntaxError";
+    line: number;
+    column: number;
+    length: number;
+}
+
+export interface KustoEvaluationError {
+    kind: "evaluationError";
+    message: string;
+}
+
+export interface EvaluationResult {
+    kind: "evaluationResult";
+    result: dfd.DataFrame;
+}
+
+export function evaluate(program: string, context: LumberjackContext) : EvaluationResult | KustoSyntaxError | KustoEvaluationError {
     const parser = new nearley.Parser(kusto_grammar)
 
-    parser.feed(program);
-    let query: Query = parser.results[0];
-
-    if (!query) {
-        return null;
+    try {
+        parser.feed(program);
+    } catch (parseError: any) {
+        return {
+            kind: "syntaxError",
+            line: parseError.token.line,
+            column: parseError.token.col,
+            length: parseError.token.text.length
+        }
     }
 
-    var result = context.getTable(query.input.name);
+    if (parser.results.length != 1) {
+        // Either an ambiguous parse (bug!) or more input is needed
+        return {
+            kind: "syntaxError",
+            line: parser.lexerState?.line ?? 0,
+            column: parser.lexerState?.col ?? 0,
+            length: 0
+        }
+    }
+
+    let query: Query = parser.results[0];
+
+    let result = context.getTable(query.input.name);
+    if (result === undefined) {
+        return {
+            kind: "evaluationError",
+            message: `Cannot find table ${query.input.name}`
+        };
+    }
+
     for (let operator of query.operators) {
         result = performOperator(operator, result, context);
     }
 
-    return result;
+    return {
+        kind: "evaluationResult",
+        result: result,
+    };
 }
 
 function performOperator(operator: Operator, input: dfd.DataFrame, context: LumberjackContext) : dfd.DataFrame {
