@@ -32,8 +32,8 @@ const lexer = moo.compile({
         value: s => s.substring(1)
     },
     string_literal: {
-        match: /"(?:[^\n\\"]|\\["\\ntbfr])*"/,
-        value: s => JSON.parse(s)
+        match: /"(?:[^\n\\"]|\\["\\ntbfr])*"|'(?:[^\n\\"]|\\["\\ntbfr])*'/,
+        value: s => JSON.parse("\"" + s.slice(1,-1) + "\"")
     },
     number_literal: {
         match: /[0-9]+(?:\.[0-9]+)?/,
@@ -81,6 +81,7 @@ operator
 expression
     -> identifier {% (d) => ({kind: "columnIdentifier", name: d[0]}) %}
     | %number_literal {% (d) => ({kind: "literal", value: d[0].value}) %}
+    | %string_literal {% (d) => ({kind: "literal", value: d[0].value}) %}
     | expression _ "==" _ expression {% (d) => ({kind: "equals", left: d[0], right: d[4]}) %}
     | expression _ "<" _ expression {% (d) => ({kind: "lessThan", left: d[0], right: d[4]}) %}
     | expression _ "+" _ expression {% (d) => ({kind: "add", left: d[0], right: d[4]}) %}

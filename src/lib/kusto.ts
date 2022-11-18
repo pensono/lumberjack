@@ -38,8 +38,8 @@ const lexer = moo.compile({
         value: s => s.substring(1)
     },
     string_literal: {
-        match: /"(?:[^\n\\"]|\\["\\ntbfr])*"/,
-        value: s => JSON.parse(s)
+        match: /"(?:[^\n\\"]|\\["\\ntbfr])*"|'(?:[^\n\\"]|\\["\\ntbfr])*'/,
+        value: s => JSON.parse("\"" + s.slice(1,-1) + "\"")
     },
     number_literal: {
         match: /[0-9]+(?:\.[0-9]+)?/,
@@ -112,6 +112,7 @@ const grammar: Grammar = {
     {"name": "operator", "symbols": [{"literal":"extend"}, "__", "identifier", "_", {"literal":"="}, "_", "expression"], "postprocess": (d) => ({kind: "extend", columnName: d[2], value: d[6]})},
     {"name": "expression", "symbols": ["identifier"], "postprocess": (d) => ({kind: "columnIdentifier", name: d[0]})},
     {"name": "expression", "symbols": [(lexer.has("number_literal") ? {type: "number_literal"} : number_literal)], "postprocess": (d) => ({kind: "literal", value: d[0].value})},
+    {"name": "expression", "symbols": [(lexer.has("string_literal") ? {type: "string_literal"} : string_literal)], "postprocess": (d) => ({kind: "literal", value: d[0].value})},
     {"name": "expression", "symbols": ["expression", "_", {"literal":"=="}, "_", "expression"], "postprocess": (d) => ({kind: "equals", left: d[0], right: d[4]})},
     {"name": "expression", "symbols": ["expression", "_", {"literal":"<"}, "_", "expression"], "postprocess": (d) => ({kind: "lessThan", left: d[0], right: d[4]})},
     {"name": "expression", "symbols": ["expression", "_", {"literal":"+"}, "_", "expression"], "postprocess": (d) => ({kind: "add", left: d[0], right: d[4]})},
