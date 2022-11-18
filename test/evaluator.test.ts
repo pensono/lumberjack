@@ -12,6 +12,7 @@ describe('evaluate successes', () => {
         ["Input | extend constant = 2", new Map([["Input", new dfd.DataFrame({"column":[1,2,3,4,5]})]]), new dfd.DataFrame({"column":[1,2,3,4,5],"constant":[2,2,2,2,2]})],
         ["Input | extend double = column * 2", new Map([["Input", new dfd.DataFrame({"column":[1,2,3,4,5]})]]), new dfd.DataFrame({"column":[1,2,3,4,5],"double":[2,4,6,8,10]})],
         ["Input | extend value = extract(\"value=(\\\\d+)\", 1, column)", new Map([["Input", new dfd.DataFrame({"column":["value=4","value=5"]})]]), new dfd.DataFrame({"column":["value=4","value=5"],"value":["4","5"]})],
+        ["Input | extend a = 1 | extend b = 2", new Map([["Input", new dfd.DataFrame({"column":["value1"]})]]), new dfd.DataFrame({"column":["value1"],"a":[1],"b":[2]})],
     ])
     ('evaluate(%s,...)', (program: string, inputs: Map<string, dfd.DataFrame>, expected: dfd.DataFrame) => {
         let context = new SimpleContext(inputs);

@@ -89,7 +89,7 @@ function extend(input: dfd.DataFrame, columnName: string, expression: Expression
 
 function evaluateExpression(input: dfd.DataFrame, expression: Expression): dfd.Series {
     switch (expression.kind) {
-        case "literal": return new Series(new Array(input.size).fill(expression.value)); // Would be nice to do this without creating a giant array
+        case "literal": return new Series(new Array(input.shape[0]).fill(expression.value)); // Would be nice to do this without creating a giant array
         case "columnIdentifier": return input[expression.name];
         case "equals": return evaluateExpression(input, expression.left).eq(evaluateExpression(input, expression.right));
         case "lessThan": return evaluateExpression(input, expression.left).lt(evaluateExpression(input, expression.right));
