@@ -1,43 +1,45 @@
 <template>
-  <main>
-    <splitpanes horizontal class="main-splitpane">
-      <pane max-size="90" min-size="5">
-        <splitpanes>
-          <pane class="input-container" min-size="5">
-            <codemirror
-              class="editor"
-              v-model="dataRaw"
-              placeholder="Data goes here..."
-            />
-          </pane>
-          <pane class="code-container" min-size="5">
-            <codemirror
-              class="editor"
-              v-model="code"
-              placeholder="Queries go here..."
-            />
-            <p v-if="errorMessage" class="error-box">{{ errorMessage }}</p>
-          </pane>
-        </splitpanes>
-      </pane>
-      <pane>
-        <DataFrameView
-          class="results"
-          v-if="outputTable"
-          :dataframe="outputTable"
-        />
-      </pane>
-    </splitpanes>
-  </main>
+  <v-app>
+    <v-main>
+      <splitpanes horizontal class="main-splitpane default-theme">
+        <pane max-size="90" min-size="5">
+          <splitpanes>
+            <pane class="input-container" min-size="5">
+              <codemirror
+                class="editor"
+                v-model="dataRaw"
+                placeholder="Data goes here..."
+              />
+            </pane>
+            <pane class="code-container" min-size="5">
+              <codemirror
+                class="editor"
+                v-model="code"
+                placeholder="Queries go here..."
+              />
+              <div v-if="errorMessage" class="error-box">{{ errorMessage }}</div>
+            </pane>
+          </splitpanes>
+        </pane>
+        <pane>
+          <DataFrameView
+            class="results"
+            v-if="outputTable"
+            :dataframe="outputTable"
+          />
+        </pane>
+      </splitpanes>
+    </v-main>
+  </v-app>
 </template>
 
 <script setup lang="ts">
 import * as dfd from "danfojs";
 import "splitpanes/dist/splitpanes.css";
 import {computed, ref, watch} from "vue";
-import { evaluate } from "@/lib/evaluator";
-import { toDataFrame } from "@/lib/raw_input";
-import { SimpleContext } from "@/lib/types";
+import {evaluate} from "@/lib/evaluator";
+import {toDataFrame} from "@/lib/raw_input";
+import {SimpleContext} from "@/lib/types";
 import DataFrameView from "@/components/DataFrameView.vue";
 
 const code = ref("");
@@ -46,8 +48,7 @@ const dataRaw = ref("");
 const evaluatedResult = computed(() => {
   let input = toDataFrame(dataRaw.value);
   let context = new SimpleContext(new Map([["Input", input]]));
-  let result = evaluate(code.value, context);
-  return result;
+  return evaluate(code.value, context);
 });
 
 const outputTable = ref<dfd.DataFrame | null>(null);
@@ -82,21 +83,18 @@ main {
   height: 100%;
 }
 
-.splitpanes__pane {
-  display: flex;
-}
-
-.splitpanes__splitter {
-  padding: 5px;
-}
 
 .code-container {
   display: flex;
   flex-direction: column;
 }
 
-.cm-scroller {
-  overflow-y: auto;
+.splitpanes__pane {
+  display: flex;
+}
+
+.splitpanes__splitter {
+  padding: .25em;
 }
 
 .cm-editor {
@@ -107,8 +105,14 @@ main {
   outline: none;
 }
 
+.cm-content {
+  /* I don't know why, but this gets exactly the correct scrollbar behavior */
+  width: 0;
+}
+
 html {
   height: 100%;
+  overflow-y: hidden;
 }
 
 body {

@@ -1,5 +1,5 @@
 <template>
-  <table v-if="dataframe">
+  <v-table fixed-header height="100%" density="compact" v-if="dataframe">
     <thead>
       <tr>
         <th v-for="column in dataframe.columns" :key="column" class="text-left">
@@ -12,8 +12,8 @@
         <td v-for="(cell, index) in row" :key="index">{{ cell }}</td>
       </tr>
     </tbody>
-  </table>
-  <p v-else>No results yet :)</p>
+  </v-table>
+  <div v-if="!dataframe">Empty table</div>
 </template>
 
 <script lang="ts">
@@ -31,30 +31,8 @@ export default {
 </script>
 
 <style scoped>
-table {
-  padding: 1em;
-  border-collapse: separate;
-  border-spacing: 0 0;
-
+.v-table {
   width: 100%;
-  height: 100%;
-  display: block;
-}
-
-tbody {
-  height: 100%;
-  display: block;
-  overflow-y: scroll;
-  overflow-x: auto;
-}
-
-thead {
-  width: 100%;
-}
-
-td {
-  border-bottom: 1px solid lightgray;
-  height: 1.5em;
 }
 
 tbody tr:hover {

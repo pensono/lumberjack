@@ -1,16 +1,22 @@
-body {
-  font-family: sans-serif;
+@use "sass:map";
+
+@import 'vuetify/lib/styles/main.sass';
+@import 'vuetify/lib/styles/settings/_colors.scss';
+@import 'utils.scss';
+
+$error: #B00020;
+
+.v-table th {
+  --v-theme-surface: #{hexToRGBString(map.get($blue-grey, "base"))};
+  color: map.get($text-on-blue-grey, "base");
 }
 
-table th {
-  background: dimgray;
-  color: white;
-}
-
-table td {
-  padding-left: .5em;
+.v-table th+th {
+  border-left: map.get($blue-grey, "lighten-5") solid 1px;
 }
 
 .error-box {
-  background: lightcoral;
+  background: $error;
+  padding: .25em;
+  color: white;
 }
