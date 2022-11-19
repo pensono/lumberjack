@@ -117,6 +117,8 @@ const grammar: Grammar = {
     {"name": "expression", "symbols": ["expression", "_", {"literal":"<"}, "_", "expression"], "postprocess": (d) => ({kind: "lessThan", left: d[0], right: d[4]})},
     {"name": "expression", "symbols": ["expression", "_", {"literal":"+"}, "_", "expression"], "postprocess": (d) => ({kind: "add", left: d[0], right: d[4]})},
     {"name": "expression", "symbols": ["expression", "_", {"literal":"*"}, "_", "expression"], "postprocess": (d) => ({kind: "multiply", left: d[0], right: d[4]})},
+    {"name": "expression", "symbols": ["expression", "_", {"literal":"contains"}, "_", "expression"], "postprocess": (d) => ({kind: "contains", left: d[0], right: d[4], caseSensitive: false})},
+    {"name": "expression", "symbols": ["expression", "_", {"literal":"contains_cs"}, "_", "expression"], "postprocess": (d) => ({kind: "contains", left: d[0], right: d[4], caseSensitive: true})},
     {"name": "expression", "symbols": [{"literal":"extract"}, "_", {"literal":"("}, "_", (lexer.has("string_literal") ? {type: "string_literal"} : string_literal), "_", {"literal":","}, "_", (lexer.has("number_literal") ? {type: "number_literal"} : number_literal), "_", {"literal":","}, "_", "expression", "_", {"literal":")"}], "postprocess": (d) => ({kind: "extract", regex: d[4].value, captureGroup: d[8].value, source: d[12]})},
     {"name": "identifier", "symbols": [(lexer.has("identifier") ? {type: "identifier"} : identifier)], "postprocess": d => d[0].text},
     {"name": "_", "symbols": []},

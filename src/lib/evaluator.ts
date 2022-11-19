@@ -4,6 +4,7 @@ import {Series} from "danfojs";
 import type { LumberjackContext } from "@/lib/types"
 import type {Query, Operator, Expression} from "@/lib/syntax"
 import kusto_grammar from "@/lib/kusto"
+import * as _ from 'lodash'
 
 
 export interface KustoSyntaxError {
@@ -95,9 +96,23 @@ function evaluateExpression(input: dfd.DataFrame, expression: Expression): dfd.S
         case "lessThan": return evaluateExpression(input, expression.left).lt(evaluateExpression(input, expression.right));
         case "add": return evaluateExpression(input, expression.left).add(evaluateExpression(input, expression.right));
         case "multiply": return evaluateExpression(input, expression.left).mul(evaluateExpression(input, expression.right));
+        case "contains": {
+            let op;
+            if (expression.caseSensitive) {
+                op = (r: any, l: any) => r.includes(l);
+            } else {
+                op = (r: any, l: any) => r.toUpperCase().includes(l.toUpperCase());
+            }
+            return binaryOperation(evaluateExpression(input, expression.left), (evaluateExpression(input, expression.right)), op);
+        }
         case "extract": {
             let regex = new RegExp(expression.regex);
             return evaluateExpression(input, expression.source).map(data => regex.exec(data)?.at(expression.captureGroup));
         }
     }
+}
+
+function binaryOperation(lhs: dfd.Series, rhs: dfd.Series, operation: (l: any, r: any) => any) {
+    // Based on https://github.com/javascriptdata/danfojs/blob/fe37f10c83265e22a645e9921e0d880b9b75a180/src/danfojs-base/core/math.ops.ts#L40
+    return new Series(_.zip(lhs.values, rhs.values).map(([l, r]) => operation(l, r)));
 }

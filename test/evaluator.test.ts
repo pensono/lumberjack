@@ -14,6 +14,9 @@ describe('evaluate successes', () => {
         ["Input | extend value = extract(\"value=(\\\\d+)\", 1, column)", new Map([["Input", new dfd.DataFrame({"column":["value=4","value=5"]})]]), new dfd.DataFrame({"column":["value=4","value=5"],"value":["4","5"]})],
         ["Input | extend a = 1 | extend b = 2", new Map([["Input", new dfd.DataFrame({"column":["value1"]})]]), new dfd.DataFrame({"column":["value1"],"a":[1],"b":[2]})],
         ["Input | extend str = \"wow\" | extend str2 = 'lol'", new Map([["Input", new dfd.DataFrame({"column":["value1"]})]]), new dfd.DataFrame({"column":["value1"],"str":["wow"],"str2":["lol"]})],
+        ["Input | where value contains_cs \"abc\"", new Map([["Input", new dfd.DataFrame({"value":["abc", "bcd", "aBc"]})]]), new dfd.DataFrame({"value":["abc"]})],
+        ["Input | where value contains \"aBc\"", new Map([["Input", new dfd.DataFrame({"value":["abc", "bcd", "aBc"]})]]), new dfd.DataFrame({"value":["abc", "aBc"]})],
+        ["Input | where value contains substr", new Map([["Input", new dfd.DataFrame({"value":["abc", "bcd", "aBc"], "substr":["a", "abc", "abc"]})]]), new dfd.DataFrame({"value":["abc", "aBc"], "substr":["a", "abc"]})],
     ])
     ('evaluate(%s,...)', (program: string, inputs: Map<string, dfd.DataFrame>, expected: dfd.DataFrame) => {
         let context = new SimpleContext(inputs);
