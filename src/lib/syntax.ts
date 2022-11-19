@@ -20,7 +20,8 @@ export class TableLookup {
 export type Operator =
     Take
     | Where
-    | Extend;
+    | Extend
+    | Summarize;
 
 export interface Take {
     kind: "take";
@@ -38,7 +39,19 @@ export interface Extend {
     value: Expression;
 }
 
-export type Expression = Literal | ColumnName | BinaryExpression | ExtractFunction | StringOperator
+export interface Summarize {
+    kind: "summarize";
+    aggregations: Aggregation[];
+    groups: string[];
+}
+
+export interface Aggregation {
+    kind: "sum";
+    overColumn: string;
+}
+
+
+export type Expression = Literal | ColumnName | BinaryExpression | ExtractFunction | BinaryStringFunction
 
 export interface Literal {
     kind: "literal";
@@ -56,7 +69,7 @@ export interface BinaryExpression {
     right: Expression;
 }
 
-export interface StringOperator {
+export interface BinaryStringFunction {
     kind: "contains";
     left: Expression;
     right: Expression;

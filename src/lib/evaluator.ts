@@ -70,22 +70,22 @@ export function evaluate(program: string, context: LumberjackContext) : Evaluati
 
 function performOperator(operator: Operator, input: dfd.DataFrame, context: LumberjackContext) : dfd.DataFrame {
     switch (operator.kind) {
-        case "take": { return take(input, operator.rows); }
-        case "where": { return where(input, operator.predicate); }
-        case "extend": { return extend(input, operator.columnName, operator.value); }
+        case "take": return input.head(operator.rows);
+        case "where": return input.loc({rows: evaluateExpression(input, operator.predicate)});
+        case "extend": return input.addColumn(operator.columnName, evaluateExpression(input, operator.value));
+        case "summarize": {
+            let aggregated = input.groupby(operator.groups).sum();
+
+            let columnMapping: {[k: string]: any} = {};
+            for (let aggregation of operator.aggregations) {
+                let columnName = aggregation.overColumn;
+                columnMapping[`${columnName}_sum`] = `sum_${columnName}`;
+            }
+            let result = aggregated.rename(columnMapping);
+
+            return result;
+        }
     }
-}
-
-function take(input: dfd.DataFrame, rows: number) : dfd.DataFrame {
-    return input.head(rows);
-}
-
-function where(input: dfd.DataFrame, predicate: Expression) : dfd.DataFrame {
-    return input.loc({rows: evaluateExpression(input, predicate)});
-}
-
-function extend(input: dfd.DataFrame, columnName: string, expression: Expression) : dfd.DataFrame {
-    return input.addColumn(columnName, evaluateExpression(input, expression));
 }
 
 function evaluateExpression(input: dfd.DataFrame, expression: Expression): dfd.Series {

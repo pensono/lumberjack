@@ -3,9 +3,11 @@ import _ from "lodash";
 
 expect.extend({
     toFrameStrictEqual(actual: dfd.DataFrame, expected: dfd.DataFrame) {
+        expect(actual.columns).toStrictEqual(expected.columns);
+        expect(actual.dtypes).toStrictEqual(expected.dtypes);
+
         const frameEq = _.isEqual(actual.values, expected.values);
-        const dtypesEq = this.equals(actual.dtypes, expected.dtypes);
-        if(frameEq && dtypesEq) {
+        if(frameEq) {
             return {
                 message: () => "dataframes match",
                 pass: true

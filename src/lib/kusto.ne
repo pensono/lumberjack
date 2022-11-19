@@ -77,6 +77,7 @@ operator
     -> "take" __ %number_literal {% (d) => ({kind: "take", rows: d[2].value}) %}
     | "where" __ expression {% (d) => ({kind: "where", predicate: d[2]}) %}
     | "extend" __ identifier _ "=" _ expression {% (d) => ({kind: "extend", columnName: d[2], value: d[6]}) %}
+    | "summarize" __ aggregation __ "by" __ groupExpression {% (d) => ({kind: "summarize", aggregations: [d[2]], groups: d[6]}) %}
 
 expression
     -> identifier {% (d) => ({kind: "columnIdentifier", name: d[0]}) %}
@@ -89,6 +90,10 @@ expression
     | expression _ "contains" _ expression {% (d) => ({kind: "contains", left: d[0], right: d[4], caseSensitive: false}) %}
     | expression _ "contains_cs" _ expression {% (d) => ({kind: "contains", left: d[0], right: d[4], caseSensitive: true}) %}
     | "extract" _ "(" _ %string_literal _ "," _ %number_literal _ "," _ expression _ ")" {% (d) => ({kind: "extract", regex: d[4].value, captureGroup: d[8].value, source: d[12]}) %}
+
+aggregation -> "sum" "(" _ identifier _ ")" {% d => ({kind: "sum", overColumn: d[3] }) %}
+
+groupExpression -> identifier
 
 identifier -> %identifier {% d => d[0].text %}
 

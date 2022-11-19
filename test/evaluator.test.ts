@@ -17,6 +17,7 @@ describe('evaluate successes', () => {
         ["Input | where value contains_cs \"abc\"", new Map([["Input", new dfd.DataFrame({"value":["abc", "bcd", "aBc"]})]]), new dfd.DataFrame({"value":["abc"]})],
         ["Input | where value contains \"aBc\"", new Map([["Input", new dfd.DataFrame({"value":["abc", "bcd", "aBc"]})]]), new dfd.DataFrame({"value":["abc", "aBc"]})],
         ["Input | where value contains substr", new Map([["Input", new dfd.DataFrame({"value":["abc", "bcd", "aBc"], "substr":["a", "abc", "abc"]})]]), new dfd.DataFrame({"value":["abc", "aBc"], "substr":["a", "abc"]})],
+        ["Input | summarize sum(v) by a", new Map([["Input", new dfd.DataFrame({"a":["a", "b", "a"], "v":[1, 2, 3]})]]), new dfd.DataFrame({"a":["a", "b"], "sum_v":[4, 2]})],
     ])
     ('evaluate(%s,...)', (program: string, inputs: Map<string, dfd.DataFrame>, expected: dfd.DataFrame) => {
         let context = new SimpleContext(inputs);
