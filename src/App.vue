@@ -1,5 +1,21 @@
 <template>
   <v-app>
+    <v-app-bar title="Lumberjack" :elevation="0" density="compact">
+      <v-btn>
+        Demo
+        <v-menu activator="parent">
+          <v-list>
+            <v-list-item
+                v-for="demo in demos"
+                :key="demo.name"
+                @click="loadDemo(demo)"
+            >
+              <v-list-item-title>{{ demo.name }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </v-btn>
+    </v-app-bar>
     <v-main>
       <splitpanes horizontal class="main-splitpane default-theme">
         <pane max-size="90" min-size="5">
@@ -41,6 +57,8 @@ import {evaluate} from "@/lib/evaluator";
 import {toDataFrame} from "@/lib/raw_input";
 import {SimpleContext} from "@/lib/types";
 import DataFrameView from "@/components/DataFrameView.vue";
+import {Demo, demos} from "@/demo_resources";
+import axios from "axios";
 
 const code = ref("");
 const dataRaw = ref("");
@@ -72,6 +90,14 @@ const errorMessage = computed<string | null>(() => {
       return null;
   }
 });
+
+function loadDemo(demo: Demo) {
+  axios.get(demo.log_url)
+      .then(result => {
+    dataRaw.value = result.data;
+    code.value = demo.query;
+  });
+}
 </script>
 
 <style>
