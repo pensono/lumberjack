@@ -2,7 +2,11 @@
   <v-app>
     <v-app-bar title="Lumberjack" :elevation="0" density="compact">
       <v-btn>
-        <a href="https://github.com/pensono/lumberjack" target="_blank" rel="noreferrer noopener" >
+        <a
+          href="https://github.com/pensono/lumberjack"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
           <v-icon icon="fa-brands fa-github" />
         </a>
       </v-btn>
@@ -26,10 +30,9 @@
         <pane max-size="90" min-size="5">
           <splitpanes>
             <pane class="input-container" min-size="5">
-              <codemirror
-                class="editor"
-                v-model="dataRaw"
-                placeholder="Data goes here..."
+              <DataInput
+                v-model:contents="dataRaw"
+                @updateDataframe="(df) => (dataContext['Input'] = df)"
               />
             </pane>
             <pane class="code-container" min-size="5">
@@ -45,11 +48,7 @@
           </splitpanes>
         </pane>
         <pane>
-          <DataFrameView
-            class="results"
-            v-if="outputTable"
-            :dataframe="outputTable"
-          />
+          <DataFrameView :dataframe="outputTable" />
         </pane>
       </splitpanes>
     </v-main>
@@ -57,23 +56,22 @@
 </template>
 
 <script setup lang="ts">
+import axios from "axios";
 import * as dfd from "danfojs";
 import "splitpanes/dist/splitpanes.css";
 import { computed, ref, watch } from "vue";
 import { evaluate } from "@/lib/evaluator";
-import { toDataFrame } from "@/lib/raw_input";
-import { SimpleContext } from "@/lib/types";
+import { LumberjackContext } from "@/lib/types";
 import DataFrameView from "@/components/DataFrameView.vue";
+import DataInput from "@/components/DataInput.vue";
 import { Demo, demos } from "@/demo_resources";
-import axios from "axios";
 
 const code = ref("");
-const dataRaw = ref("");
+const dataRaw = ref("woo test");
+const dataContext = ref<LumberjackContext>({});
 
 const evaluatedResult = computed(() => {
-  let input = toDataFrame(dataRaw.value);
-  let context = new SimpleContext(new Map([["Input", input]]));
-  return evaluate(code.value, context);
+  return evaluate(code.value, dataContext.value);
 });
 
 const outputTable = ref<dfd.DataFrame | null>(null);

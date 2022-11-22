@@ -50,7 +50,7 @@ export function evaluate(program: string, context: LumberjackContext) : Evaluati
 
     let query: Query = parser.results[0];
 
-    let result = context.getTable(query.input.name);
+    let result = context[query.input.name];
     if (result === undefined) {
         return {
             kind: "evaluationError",
