@@ -19,6 +19,7 @@
     "blueprint-vue": "^2.5.8",
     "codemirror": "^6.0.1",
     "core-js": "^3.8.3",
+    "csv": "^6.2.3",
     "danfojs": "1.1.1",
     "lodash": "^4.17.21",
     "moo": "^0.5.2",

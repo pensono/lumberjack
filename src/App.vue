@@ -31,7 +31,7 @@
           <splitpanes>
             <pane class="input-container" min-size="5">
               <DataInput
-                v-model:contents="dataRaw"
+                v-model:document="document"
                 @updateDataframe="(df) => (dataContext['Input'] = df)"
               />
             </pane>
@@ -61,13 +61,16 @@ import * as dfd from "danfojs";
 import "splitpanes/dist/splitpanes.css";
 import { computed, ref, watch } from "vue";
 import { evaluate } from "@/lib/evaluator";
-import { LumberjackContext } from "@/lib/types";
+import { LumberjackContext, LumberjackDocument } from "@/lib/types";
 import DataFrameView from "@/components/DataFrameView.vue";
-import DataInput from "@/components/DataInput.vue";
+import DataInput from "@/components/DocumentInput.vue";
 import { Demo, demos } from "@/demo_resources";
 
 const code = ref("");
-const dataRaw = ref("");
+const document = ref<LumberjackDocument>({
+  contents: "",
+  format: { kind: "log" },
+});
 const dataContext = ref<LumberjackContext>({});
 
 const evaluatedResult = computed(() => {
@@ -98,7 +101,7 @@ const errorMessage = computed<string | null>(() => {
 
 function loadDemo(demo: Demo) {
   axios.get(demo.log_url).then((result) => {
-    dataRaw.value = result.data;
+    document.value.contents = result.data;
     code.value = demo.query;
   });
 }

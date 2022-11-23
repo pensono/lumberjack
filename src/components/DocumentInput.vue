@@ -1,14 +1,19 @@
 <template>
   <div class="wrap">
     <div class="controls">
-      <v-btn-toggle rounded="0" color="deep-purple-accent-3" group>
-        <v-btn value="csv">CSV</v-btn>
-        <v-btn value="log"> Log</v-btn>
+      <v-btn-toggle
+        rounded="0"
+        group
+        density="compact"
+        v-model="document.format"
+      >
+        <v-btn :value="{ kind: 'csv' }" size="small">CSV</v-btn>
+        <v-btn :value="{ kind: 'log' }" size="small">Log</v-btn>
       </v-btn-toggle>
     </div>
     <codemirror
       class="editor"
-      v-model="contents"
+      v-model="document.contents"
       placeholder="Data goes here..."
     />
   </div>
@@ -16,25 +21,30 @@
 
 <script setup lang="ts">
 import type * as dfd from "danfojs";
-import { defineEmits, defineProps, watch } from "vue";
+import { computed, defineEmits, defineProps, ref, watch } from "vue";
 import { toDataFrame } from "@/lib/raw_input";
+import type { LumberjackDocument } from "@/lib/types";
 
 const props = defineProps<{
-  contents: string;
+  document: LumberjackDocument;
 }>();
 
 const emit = defineEmits<{
-  (e: "update:contents", newValue: string): void;
+  (e: "update:document", newValue: string): void;
   (e: "updateDataframe", newValue: dfd.DataFrame): void;
 }>();
 
 watch(
-  () => props.contents,
-  (newValue) => {
-    let newDataframe = toDataFrame(newValue);
+  () => props.document,
+  (v) => {
+    console.log(props.document.format);
+    let newDataframe = toDataFrame(props.document);
     emit("updateDataframe", newDataframe);
-  }
+    return newDataframe;
+  },
+  { deep: true }
 );
+
 </script>
 
 <style scoped>
