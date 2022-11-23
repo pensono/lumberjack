@@ -1,9 +1,17 @@
 <template>
-  <codemirror
-    class="editor"
-    v-model="contents"
-    placeholder="Data goes here..."
-  />
+  <div class="wrap">
+    <div class="controls">
+      <v-btn-toggle rounded="0" color="deep-purple-accent-3" group>
+        <v-btn value="csv">CSV</v-btn>
+        <v-btn value="log"> Log</v-btn>
+      </v-btn-toggle>
+    </div>
+    <codemirror
+      class="editor"
+      v-model="contents"
+      placeholder="Data goes here..."
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -20,7 +28,6 @@ const emit = defineEmits<{
   (e: "updateDataframe", newValue: dfd.DataFrame): void;
 }>();
 
-
 watch(
   () => props.contents,
   (newValue) => {
@@ -30,4 +37,23 @@ watch(
 );
 </script>
 
-<style scoped></style>
+<style scoped>
+.wrap {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.controls {
+  align-self: stretch;
+}
+</style>
+
+<style>
+.cm-editor {
+  flex-grow: 1;
+  flex-shrink: 1;
+  min-height: 0;
+}
+</style>

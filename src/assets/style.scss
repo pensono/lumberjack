@@ -24,3 +24,15 @@ $error: #B00020;
 .v-toolbar {
   z-index: 0;
 }
+
+.cm-editor.cm-focused {
+  outline: none;
+}
+
+html {
+  overflow: hidden;
+}
+
+.fa-github {
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
+}

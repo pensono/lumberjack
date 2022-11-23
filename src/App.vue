@@ -67,7 +67,7 @@ import DataInput from "@/components/DataInput.vue";
 import { Demo, demos } from "@/demo_resources";
 
 const code = ref("");
-const dataRaw = ref("woo test");
+const dataRaw = ref("");
 const dataContext = ref<LumberjackContext>({});
 
 const evaluatedResult = computed(() => {
@@ -128,28 +128,8 @@ main {
 
 .cm-editor {
   flex-grow: 1;
-}
-
-.cm-editor.cm-focused {
-  outline: none;
-}
-
-.cm-content {
-  /* I don't know why, but this gets exactly the correct scrollbar behavior */
-  width: 0;
-}
-
-html {
-  height: 100%;
-  overflow-y: hidden;
-}
-
-body {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  flex-shrink: 1;
+  min-height: 0;
 }
 
 main {
@@ -158,5 +138,6 @@ main {
   bottom: 0;
   left: 0;
   right: 0;
+  overflow-y: hidden;
 }
 </style>
