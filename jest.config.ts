@@ -9,5 +9,6 @@ export default {
     "^@/(.*)": "<rootDir>/src/$1"
   },
   setupFilesAfterEnv : ["<rootDir>/test/danfoSetup.ts"],
-  testPathIgnorePatterns: ["<rootDir>/test/danfoSetup.ts"]
+  testPathIgnorePatterns: ["<rootDir>/test/danfoSetup.ts"],
+  reporters: ['jest-junit']
 };
