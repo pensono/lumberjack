@@ -10,9 +10,4 @@ export default {
   },
   setupFilesAfterEnv : ["<rootDir>/test/danfoSetup.ts"],
   testPathIgnorePatterns: ["<rootDir>/test/danfoSetup.ts"],
-  reporters: [
-    'default',
-    'github-actions',
-    ['jest-junit', {outputDirectory: 'reports', outputName: 'report.xml'}],
-  ]
 };

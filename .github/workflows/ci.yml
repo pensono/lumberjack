@@ -3,7 +3,7 @@ name: Tests CI
 on: [push, pull_request]
 
 jobs:
-  "Test":
+  "Run Tests":
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -15,8 +15,8 @@ jobs:
       - run: npm run test-ci
       - name: Test Report
         uses: dorny/test-reporter@v1
-        if: success() || failure()    # run this step even if previous step failed
+        if: success() || failure()
         with:
-          name: Jest Tests            # Name of the check run which will be created
-          path: reports/report.xml    # Path to test results
-          reporter: jest-junit        # Format of test results
+          name: Test Results
+          path: junit.xml
+          reporter: jest-junit
