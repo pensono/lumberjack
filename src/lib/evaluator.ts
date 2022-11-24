@@ -58,8 +58,15 @@ export function evaluate(program: string, context: LumberjackContext) : Evaluati
         };
     }
 
-    for (let operator of query.operators) {
-        result = performOperator(operator, result, context);
+    try {
+        for (let operator of query.operators) {
+            result = performOperator(operator, result, context);
+        }
+    } catch (e: any) {
+        return {
+            kind: "evaluationError",
+            message: `unknown error ${e.message}`
+        }
     }
 
     return {
@@ -74,7 +81,8 @@ function performOperator(operator: Operator, input: dfd.DataFrame, context: Lumb
         case "where": return input.loc({rows: evaluateExpression(input, operator.predicate)});
         case "extend": return input.addColumn(operator.columnName, evaluateExpression(input, operator.value));
         case "summarize": {
-            let aggregated = input.groupby(operator.groups).sum();
+            let relevantColumns = operator.groups.concat(operator.aggregations.map(a => a.overColumn))
+            let aggregated = input.loc({columns: relevantColumns}).groupby(operator.groups).sum();
 
             let columnMapping: {[k: string]: any} = {};
             for (let aggregation of operator.aggregations) {

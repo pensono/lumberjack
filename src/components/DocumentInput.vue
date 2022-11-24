@@ -37,7 +37,6 @@ const emit = defineEmits<{
 watch(
   () => props.document,
   (v) => {
-    console.log(props.document.format);
     let newDataframe = toDataFrame(props.document);
     emit("updateDataframe", newDataframe);
     return newDataframe;
