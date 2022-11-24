@@ -17,7 +17,6 @@
   "dependencies": {
     "@mdi/font": "^7.0.96",
     "axios": "^1.2.0",
-    "blueprint-vue": "^2.5.10",
     "codemirror": "^6.0.1",
     "core-js": "^3.26.1",
     "csv": "^6.2.3",
