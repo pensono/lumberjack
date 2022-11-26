@@ -10,4 +10,7 @@ export default {
   },
   setupFilesAfterEnv : ["<rootDir>/test/danfoSetup.ts"],
   testPathIgnorePatterns: ["<rootDir>/test/danfoSetup.ts"],
+  transformIgnorePatterns : [
+    "node_modules/(?!csv-parse)"
+  ]
 };
