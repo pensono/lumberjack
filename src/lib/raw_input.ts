@@ -6,7 +6,7 @@ import type {LumberjackDocument} from "@/lib/types";
 export function toDataFrame(document: LumberjackDocument) : dfd.DataFrame {
     switch (document.format.kind) {
         case "csv": {
-            let records = parse(document.contents, {columns: true, cast: true});
+            let records = parse(document.contents, {columns: true, cast: true, cast_date: true});
             return new dfd.DataFrame(records);
         }
         case "log": {
