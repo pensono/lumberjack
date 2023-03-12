@@ -1,6 +1,6 @@
 import * as dfd from "danfojs";
 import {parse} from "csv-parse/browser/esm/sync";
-import type {LumberjackDocument} from "@/lib/types";
+import type {KustoSchema, LumberjackDocument} from "@/lib/types";
 
 
 export function toDataFrame(document: LumberjackDocument) : dfd.DataFrame {
@@ -15,4 +15,20 @@ export function toDataFrame(document: LumberjackDocument) : dfd.DataFrame {
             return new dfd.DataFrame({line: lines});
         }
     }
+}
+
+export function inferSchema(input: dfd.DataFrame) : KustoSchema {
+    let dtypeToKustoType = {
+        "string": "string",
+        "int32": "int"
+    }
+    let result = []
+    for (let i = 0; i < input.columns.length; i++) {
+        result.push({
+            name: input.columns[i],
+            type: dtypeToKustoType[input.dtypes[i]],
+        });
+    }
+
+    return {columns: result};
 }
